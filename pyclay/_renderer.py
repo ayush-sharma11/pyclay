@@ -988,6 +988,7 @@ a.btn:hover {
     gap: 1.25rem;
     z-index: 10000;
     transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto; /* Enable scrolling if elements exceed screen height */
   }
   .navbar-links.open {
     right: 0;
@@ -1034,6 +1035,7 @@ a.btn:hover {
     margin-top: auto;
     padding-top: 1.25rem;
     border-top: 1px solid var(--border);
+    flex-shrink: 0; /* Prevent shrinking when content overflows */
   }
   .navbar-links .theme-dropdown-btn {
     width: 100%;
@@ -1042,13 +1044,11 @@ a.btn:hover {
     font-size: 1rem;
   }
   .navbar-links .theme-dropdown-menu {
-    position: absolute;
-    bottom: calc(100% + 6px);
-    top: auto;
-    left: 0;
-    right: 0;
+    position: static; /* Flow inline to prevent overflow clipping in scrollable sidebar */
+    margin-top: 0.5rem;
     width: 100%;
-    box-shadow: var(--shadow-lg);
+    box-shadow: none;
+    border: 1px solid var(--border);
   }
 
   /* Backdrop Overlay  */
