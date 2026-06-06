@@ -5,7 +5,7 @@ Every function appends a component dict to the runtime tree.
 An optional ``style`` dict lets callers control CSS per-element.
 """
 
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 from contextlib import contextmanager
 from pyclay import _runtime
