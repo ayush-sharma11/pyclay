@@ -936,16 +936,18 @@ a.btn:hover {
 .navbar-toggle {
   display: none;
   background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: none;
   padding: 6px 8px;
   cursor: pointer;
   color: var(--fg-muted);
-  transition: all .15s ease;
+  transition: color .15s ease;
+  outline: none;
 }
 .navbar-toggle:hover {
   color: var(--fg);
-  background: var(--accent-soft);
+}
+.navbar-sidebar-close {
+  display: none;
 }
 
 /* Responsive breakpoint  */
@@ -955,22 +957,123 @@ a.btn:hover {
     grid-template-columns: 1fr !important;
   }
 
-  /* Stack navbar links vertically  */
-  .navbar-simple .navbar-inner {
-    flex-wrap: wrap;
+  /* Force navbar-inner to be a row layout on mobile  */
+  .navbar-inner {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
   }
+  .navbar-centered .navbar-brand {
+    font-size: 1.15rem !important;
+  }
+
   .navbar-toggle { display: block; }
+
+  /* Slide-in Sidebar  */
   .navbar-links {
-    display: none;
+    position: fixed;
+    top: 0;
+    right: -280px;
+    width: 280px;
+    height: 100vh;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    display: flex;
     flex-direction: column;
-    width: 100%;
-    gap: 0.5rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--border);
-    margin-top: 0.75rem;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 2rem 1.5rem;
+    gap: 1.25rem;
+    z-index: 10000;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .navbar-links.open {
-    display: flex;
+    right: 0;
+  }
+
+  /* Sidebar Links  */
+  .navbar-links a {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    width: 100%;
+    color: var(--fg-muted);
+    transition: color 0.2s ease, padding-left 0.2s ease;
+    display: block;
+  }
+  .navbar-links a:hover,
+  .navbar-links a.active {
+    color: var(--accent);
+    padding-left: 6px;
+    text-decoration: none;
+  }
+
+  /* Sidebar Close Button  */
+  .navbar-sidebar-close {
+    display: block;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--fg-muted);
+    align-self: flex-end;
+    padding: 4px;
+    margin-bottom: 0.5rem;
+    transition: color 0.15s ease;
+    outline: none;
+  }
+  .navbar-sidebar-close:hover {
+    color: var(--fg);
+  }
+
+  /* Sidebar Theme Switcher  */
+  .navbar-links .theme-dropdown {
+    width: 100%;
+    margin-top: auto;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .navbar-links .theme-dropdown-btn {
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 14px;
+    font-size: 1rem;
+  }
+  .navbar-links .theme-dropdown-menu {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    top: auto;
+    left: 0;
+    right: 0;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Backdrop Overlay  */
+  .navbar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .navbar-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Prevent Body Scroll  */
+  body.navbar-open {
+    overflow: hidden;
   }
 
   /* Footer responsive  */
@@ -1213,8 +1316,51 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggle = document.querySelector('.navbar-toggle');
   const links = document.querySelector('.navbar-links');
   if (toggle && links) {
-    toggle.addEventListener('click', () => {
-      links.classList.toggle('open');
+    // Create backdrop dynamically
+    const backdrop = document.createElement('div');
+    backdrop.className = 'navbar-backdrop';
+    document.body.appendChild(backdrop);
+
+    // Create close button dynamically inside sidebar if it doesn't exist
+    if (!links.querySelector('.navbar-sidebar-close')) {
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'navbar-sidebar-close';
+      closeBtn.setAttribute('aria-label', 'Close navigation');
+      closeBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+      links.insertBefore(closeBtn, links.firstChild);
+      
+      closeBtn.addEventListener('click', closeSidebar);
+    }
+
+    function openSidebar() {
+      links.classList.add('open');
+      backdrop.classList.add('open');
+      document.body.classList.add('navbar-open');
+    }
+
+    function closeSidebar() {
+      links.classList.remove('open');
+      backdrop.classList.remove('open');
+      document.body.classList.remove('navbar-open');
+    }
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (links.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+
+    // Close when clicking backdrop
+    backdrop.addEventListener('click', closeSidebar);
+
+    // Close when clicking any link/tab inside the sidebar
+    links.addEventListener('click', (e) => {
+      if (e.target.closest('a') || e.target.closest('.theme-dropdown-menu button')) {
+        closeSidebar();
+      }
     });
   }
 });

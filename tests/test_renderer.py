@@ -71,3 +71,13 @@ def test_render_theme_switcher_disabled():
     # But the default theme attribute is still applied
     assert 'data-theme="nebula"' in html
 
+
+def test_render_sidebar_resources():
+    """Verify that navbar sidebar CSS and JS resources are present in the HTML output."""
+    pc.page_config(title="Test Page")
+    pc.navbar("Test Brand")
+    html = _renderer.render_page()
+    assert ".navbar-sidebar-close" in html
+    assert ".navbar-backdrop" in html
+    assert "navbar-backdrop" in html  # checking JS
+
