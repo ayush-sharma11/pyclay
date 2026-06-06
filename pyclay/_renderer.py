@@ -984,7 +984,7 @@ a.btn:hover {
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    padding: 2rem 1.5rem;
+    padding: 2rem 1.5rem 5rem 1.5rem; /* Generous bottom padding to prevent mobile browser bar overlap */
     gap: 1.25rem;
     z-index: 10000;
     transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1032,7 +1032,7 @@ a.btn:hover {
   /* Sidebar Theme Switcher  */
   .navbar-links .theme-dropdown {
     width: 100%;
-    margin-top: auto;
+    margin-top: 1.5rem; /* Flow naturally below links instead of auto-positioning */
     padding-top: 1.25rem;
     border-top: 1px solid var(--border);
     flex-shrink: 0; /* Prevent shrinking when content overflows */
