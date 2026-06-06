@@ -27,11 +27,13 @@ pc.heading("pyclay", style={"text_align": "center", "font_size": "3.5rem",
 pc.text("Build beautiful, responsive web pages entirely in Python.", style={
     "text_align": "center", "font_size": "1.25rem", "color": "var(--fg-muted)", "margin_bottom": "1.5rem"})
 
-with pc.columns([1, 1], gap="1rem", style={"max_width": "350px", "margin": "0 auto"}):
+with pc.columns([1, 1, 1], gap="1rem", style={"max_width": "480px", "margin": "0 auto"}):
     with pc.column():
         pc.link_button("Get Started", "#docs", style={"width": "100%", "text_align": "center"})
     with pc.column():
         pc.link_button("GitHub", "https://github.com/ayush-sharma11/pyclay", style={"width": "100%", "text_align": "center", "background": "transparent", "border": "1px solid var(--border)", "color": "var(--fg)"})
+    with pc.column():
+        pc.link_button("PyPI", "https://pypi.org/project/pyclay/", style={"width": "100%", "text_align": "center", "background": "transparent", "border": "1px solid var(--border)", "color": "var(--fg)"})
 
 pc.spacer("3rem")
 
@@ -140,7 +142,7 @@ pc.text("Follow this step-by-step guide to create, run, and export a multi-page 
 pc.spacer("1.5rem")
 
 pc.heading("Step 1: Install Pyclay", level=3)
-pc.text("Open your terminal and install the library via pip:")
+pc.text("Open your terminal and install the library via pip (also hosted on [PyPI](https://pypi.org/project/pyclay/)):")
 pc.code_block("pip install pyclay", language="bash")
 
 pc.spacer("1.5rem")
@@ -194,7 +196,7 @@ pc.heading("Docs & Getting Started", level=2, style={"border_bottom": "1px solid
 pc.spacer("1.5rem")
 
 pc.heading("Installation", level=3)
-pc.text("Install the library from pip in your terminal:")
+pc.text("Install the library from pip in your terminal (or view the package on [PyPI](https://pypi.org/project/pyclay/)):")
 pc.code_block("pip install pyclay", language="bash")
 
 pc.spacer("1rem")
@@ -533,6 +535,7 @@ pc.footer(
         {"heading": "Resources", "links": [
             {"text": "Documentation", "href": "#docs"},
             {"text": "Tutorials", "href": "#tutorial"},
+            {"text": "PyPI Package", "href": "https://pypi.org/project/pyclay/"},
         ]},
         {"heading": "Community", "links": [
             {"text": "GitHub Project", "href": "https://github.com/ayush-sharma11/pyclay"},
