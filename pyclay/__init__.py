@@ -5,7 +5,7 @@ Every function appends a component dict to the runtime tree.
 An optional ``style`` dict lets callers control CSS per-element.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 from contextlib import contextmanager
 from pyclay import _runtime
@@ -15,17 +15,19 @@ from pyclay import _runtime
 
 _VALID_THEMES = {"ivory", "nebula", "arctic", "obsidian"}
 
-def page_config(*, title="My App", theme="ivory", favicon="", custom_css=""):
+def page_config(*, title="My App", theme="ivory", favicon="", custom_css="", theme_switcher=True):
     """Set page-level settings.  Call once, at the top of your script.
 
     Args:
-        title:      Browser tab title.
-        theme:      ``"ivory"``, ``"nebula"``, ``"arctic"``, or ``"obsidian"``.
-        favicon:    URL to a favicon image (optional).
-        custom_css: Path or URL to a custom CSS file (optional).
+        title:          Browser tab title.
+        theme:          ``"ivory"``, ``"nebula"``, ``"arctic"``, or ``"obsidian"``.
+        favicon:        URL to a favicon image (optional).
+        custom_css:     Path or URL to a custom CSS file (optional).
+        theme_switcher: If True, renders a theme selector dropdown in the navbar
+                        (or floating) to switch themes live. (default: True).
     """
     assert theme in _VALID_THEMES, f"theme must be one of {_VALID_THEMES}"
-    _runtime.set_page_config(title=title, theme=theme, favicon=favicon, custom_css=custom_css)
+    _runtime.set_page_config(title=title, theme=theme, favicon=favicon, custom_css=custom_css, theme_switcher=theme_switcher)
 
 
 def page(name):

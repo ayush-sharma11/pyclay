@@ -253,7 +253,8 @@ def render_component(c):
     # Navbar & Footer
     if t == "navbar":
         theme = _runtime.get_page_config().get("theme", "ivory")
-        dropdown_html = _build_theme_dropdown_html(theme)
+        theme_switcher = _runtime.get_page_config().get("theme_switcher", True)
+        dropdown_html = _build_theme_dropdown_html(theme) if theme_switcher else ""
         links_html = "".join(f'<a href="{_esc(link["href"])}">{_esc(link["text"])}</a>' for link in c.get("links", []))
         links_html += dropdown_html
         hamburger_svg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>'
@@ -652,6 +653,10 @@ img, video {
 .navbar-links a:hover {
   color: var(--fg);
 }
+.navbar-links a.active {
+  color: var(--accent);
+  font-weight: 600;
+}
 
 /* simple: logo left, links right */
 .navbar-simple .navbar-inner {
@@ -1036,37 +1041,53 @@ _THEME_SWITCHER_JS = """
 
   function applyTheme(name) {
     root.setAttribute('data-theme', name);
-    // Update active state in dropdown
+    // Update active state in dropdowns
     document.querySelectorAll('.theme-dropdown-menu button').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.theme === name);
     });
-    // Update button text
-    const btnText = document.querySelector('.theme-dropdown-btn span');
-    if (btnText) {
-      btnText.textContent = labels[name] || 'Theme';
-    }
+    // Update button text in all dropdowns
+    document.querySelectorAll('.theme-dropdown-btn span').forEach(span => {
+      span.textContent = labels[name] || 'Theme';
+    });
     localStorage.setItem('pyclay-theme', name);
   }
 
-  // Restore saved theme
+  // Restore saved theme on root ASAP to prevent FOUC
   const saved = localStorage.getItem('pyclay-theme');
-  if (saved && THEMES.includes(saved)) { applyTheme(saved); }
+  if (saved && THEMES.includes(saved)) {
+    root.setAttribute('data-theme', saved);
+  }
 
-  // Toggle dropdown on button click
-  document.addEventListener('DOMContentLoaded', () => {
-    const dropdown = document.querySelector('.theme-dropdown');
-    const dropdownBtn = document.querySelector('.theme-dropdown-btn');
-    if (dropdownBtn && dropdown) {
-      dropdownBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dropdown.classList.toggle('open');
+  function init() {
+    // Sync dropdown UI with current theme on load
+    const currentTheme = root.getAttribute('data-theme');
+    if (currentTheme) {
+      document.querySelectorAll('.theme-dropdown-menu button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === currentTheme);
+      });
+      document.querySelectorAll('.theme-dropdown-btn span').forEach(span => {
+        span.textContent = labels[currentTheme] || 'Theme';
       });
     }
 
-    // Close when clicking outside
+    // Toggle dropdown on button click
     document.addEventListener('click', (e) => {
-      if (dropdown && !dropdown.contains(e.target)) {
-        dropdown.classList.remove('open');
+      const btn = e.target.closest('.theme-dropdown-btn');
+      if (btn) {
+        e.stopPropagation();
+        const dropdown = btn.closest('.theme-dropdown');
+        if (dropdown) {
+          const wasOpen = dropdown.classList.contains('open');
+          document.querySelectorAll('.theme-dropdown').forEach(d => d.classList.remove('open'));
+          if (!wasOpen) {
+            dropdown.classList.add('open');
+          }
+        }
+      } else {
+        // Close all dropdowns when clicking outside
+        document.querySelectorAll('.theme-dropdown').forEach(dropdown => {
+          dropdown.classList.remove('open');
+        });
       }
     });
 
@@ -1074,10 +1095,15 @@ _THEME_SWITCHER_JS = """
     document.querySelectorAll('.theme-dropdown-menu button').forEach(btn => {
       btn.addEventListener('click', () => {
         applyTheme(btn.dataset.theme);
-        if (dropdown) dropdown.classList.remove('open');
       });
     });
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
 </script>
 """
@@ -1116,12 +1142,15 @@ _ROUTER_JS = """
     const hash = window.location.hash.substring(1);
     const pages = document.querySelectorAll('.pyclay-page');
     let found = false;
+    let activePageName = '';
 
-    pages.forEach(p => {
+    pages.forEach((p, idx) => {
       const name = p.dataset.pageName || '';
-      if (name.toLowerCase() === hash.toLowerCase() || p.id.toLowerCase() === ('page-' + hash).toLowerCase()) {
+      const isMatch = name.toLowerCase() === hash.toLowerCase() || p.id.toLowerCase() === ('page-' + hash).toLowerCase();
+      if (isMatch || (!hash && idx === 0)) {
         p.style.display = 'block';
         found = true;
+        activePageName = name;
       } else {
         p.style.display = 'none';
       }
@@ -1131,7 +1160,23 @@ _ROUTER_JS = """
       pages.forEach((p, idx) => {
         p.style.display = idx === 0 ? 'block' : 'none';
       });
+      activePageName = pages[0].dataset.pageName || '';
     }
+
+    // Update active state on navbar links
+    document.querySelectorAll('.navbar-links a').forEach(a => {
+      const href = a.getAttribute('href') || '';
+      if (href.startsWith('#')) {
+        const pageHash = href.substring(1).toLowerCase();
+        const currentHash = (hash || activePageName).toLowerCase();
+        a.classList.toggle('active', pageHash === currentHash);
+      } else {
+        a.classList.remove('active');
+      }
+    });
+
+    // Scroll to top of the page on navigation
+    window.scrollTo(0, 0);
   }
 
   window.addEventListener('hashchange', navigate);
@@ -1248,15 +1293,20 @@ def render_page(title=None):
     all_theme_css = "\n".join(theme_css_blocks)
 
     # Theme switcher
+    theme_switcher = config.get("theme_switcher", True)
     has_navbar = len(navbars) > 0
-    if has_navbar:
+    if has_navbar or not theme_switcher:
         switcher_html = ""
     else:
         switcher_html = f'<div class="theme-switcher-floating">{_build_theme_dropdown_html(theme)}</div>'
-    switcher_js = _THEME_SWITCHER_JS.replace(
-        "%THEMES_JSON%",
-        '["ivory","nebula","arctic","obsidian"]'
-    )
+
+    if theme_switcher:
+        switcher_js = _THEME_SWITCHER_JS.replace(
+            "%THEMES_JSON%",
+            '["ivory","nebula","arctic","obsidian"]'
+        )
+    else:
+        switcher_js = ""
 
     # Prism.js syntax highlighting (lightweight, no build step)
     prism_theme_light = 'prism'

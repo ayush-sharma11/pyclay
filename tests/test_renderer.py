@@ -50,3 +50,24 @@ def test_render_code_block_escaped():
     html = _renderer.render_page()
     # The raw <script> should NOT appear unescaped
     assert "<script>alert(" not in html
+
+
+def test_render_theme_sync_js_included():
+    """The theme sync JS should be included in the rendered output."""
+    pc.page_config(title="T", theme="obsidian")
+    html = _renderer.render_page()
+    assert "const currentTheme = root.getAttribute('data-theme');" in html
+
+
+def test_render_theme_switcher_disabled():
+    """When theme_switcher is False, the theme toggle elements and JS are omitted."""
+    pc.page_config(title="T", theme="nebula", theme_switcher=False)
+    pc.navbar("My Brand")
+    html = _renderer.render_page()
+    # Navbar shouldn't contain the dropdown
+    assert 'class="theme-dropdown"' not in html
+    # The theme switcher JS should not be loaded
+    assert "labels = { ivory: 'Ivory'" not in html
+    # But the default theme attribute is still applied
+    assert 'data-theme="nebula"' in html
+

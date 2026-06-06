@@ -14,8 +14,6 @@
 
 pyclay is a Python-native static site builder. Write Python functions, get a production-ready HTML page - with themes, responsive layouts, and zero frontend knowledge required.
 
-Think of it as **Streamlit's simplicity, but for static sites you can deploy anywhere**.
-
 ## Features
 
 - **4 Built-in Themes** - Ivory, Nebula, Arctic, and Obsidian. Switch live via dropdown.
@@ -90,10 +88,13 @@ Place all your static files (images, videos, etc.) inside an `assets/` folder in
 ## Themes
 
 ```python
-pc.page_config(theme="obsidian")  # ivory | nebula | arctic | obsidian
+pc.page_config(
+    theme="obsidian",      # ivory | nebula | arctic | obsidian
+    theme_switcher=True    # set to False to lock the site to one theme and hide the toggle
+)
 ```
 
-Users can switch themes live via the built-in dropdown in the navbar.
+By default, users can switch themes live via the built-in dropdown in the navbar (or floating). If you set `theme_switcher=False`, the site will remain locked to the chosen theme and no toggle dropdown elements will be rendered.
 
 ## Layout System
 

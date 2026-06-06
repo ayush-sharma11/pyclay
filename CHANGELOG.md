@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-06-06
+
+### Added
+- Added `theme_switcher` option in `pc.page_config` to lock site theme and disable switcher dropdown.
+- Added graceful shutdown handling to dev server (clean stop without python tracebacks).
+
+### Fixed
+- Fixed theme name syncing bug in dropdown when restoring cached theme from localStorage on page refresh.
+
 ## [1.0.0] - 2026-06-06
 
 ### Added

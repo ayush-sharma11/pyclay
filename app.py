@@ -1,4 +1,5 @@
 # app.py  --  pyclay showcase & documentation
+import datetime
 import pyclay as pc
 
 # Page config
@@ -8,6 +9,8 @@ pc.page_config(title="pyclay - Python to Web", theme="obsidian")
 # The navbar links use hash routing matching the page names defined below.
 pc.navbar("pyclay", links=[
     {"text": "Home", "href": "#home"},
+    {"text": "Features", "href": "#features"},
+    {"text": "Tutorial", "href": "#tutorial"},
     {"text": "Docs", "href": "#docs"},
     {"text": "Components", "href": "#components"},
 ], variant="simple")
@@ -81,6 +84,108 @@ with pc.columns([1, 1], gap="1.5rem"):
 
 
 # =========================================================================
+#  PAGE: FEATURES
+# =========================================================================
+pc.page("Features")
+
+pc.heading("Core Features", level=2, style={"border_bottom": "1px solid var(--border)", "padding_bottom": "0.5rem"})
+pc.spacer("1.5rem")
+
+pc.text("pyclay comes packed with features designed to build performant, beautiful static sites in pure Python with zero build configuration.")
+
+pc.spacer("1.5rem")
+
+# Row 1 of Features
+with pc.columns([1, 1], gap="1.5rem"):
+    with pc.column():
+        pc.card(title="4 Creative Themes",
+                body="Switch between Ivory, Nebula, Arctic, and Obsidian live with the built-in dropdown, or lock your site to a single theme.")
+    with pc.column():
+        pc.card(title="Responsive Grid Layout",
+                body="Columns automatically stack vertically on mobile. Flexibly arrange components using the `columns()` and `container()` context managers.")
+
+pc.spacer("1.5rem")
+
+# Row 2 of Features
+with pc.columns([1, 1], gap="1.5rem"):
+    with pc.column():
+        pc.card(title="Hot Reloading",
+                body="Edit your python code, save, and watch the page refresh instantly in the browser in real-time.")
+    with pc.column():
+        pc.card(title="Zero-JS Static Export",
+                body="Build and export standalone, lightweight HTML files with `pyclay build`. Perfect for GitHub Pages, Netlify, Vercel, or custom servers.")
+
+pc.spacer("1.5rem")
+
+# Row 3 of Features
+with pc.columns([1, 1], gap="1.5rem"):
+    with pc.column():
+        pc.card(title="Syntax Highlighting",
+                body="Automatic, themed syntax highlighting for Python, Bash, JS, and CSS using Prism.js out-of-the-box.")
+    with pc.column():
+        pc.card(title="Custom Styling Control",
+                body="Override styles dynamically. Every component accepts a `style` dictionary to adjust margins, colors, borders, and alignments.")
+
+
+# =========================================================================
+#  PAGE: TUTORIAL
+# =========================================================================
+pc.page("Tutorial")
+
+pc.heading("Tutorial: Build Your First Site", level=2, style={"border_bottom": "1px solid var(--border)", "padding_bottom": "0.5rem"})
+pc.spacer("1.5rem")
+
+pc.text("Follow this step-by-step guide to create, run, and export a multi-page pyclay site in under 5 minutes.")
+
+pc.spacer("1.5rem")
+
+pc.heading("Step 1: Install Pyclay", level=3)
+pc.text("Open your terminal and install the library via pip:")
+pc.code_block("pip install pyclay", language="bash")
+
+pc.spacer("1.5rem")
+
+pc.heading("Step 2: Create your App Code", level=3)
+pc.text("Create a file named `app.py` and write your pages programmatically in pure Python:")
+pc.code_block("""import pyclay as pc
+
+# Configure the tab title and page theme
+pc.page_config(title="My First App", theme="nebula")
+
+# Add a header navigation bar
+pc.navbar("My Brand", links=[
+    {"text": "Home", "href": "#home"},
+    {"text": "About", "href": "#about"}
+])
+
+# Define the Home page
+pc.page("Home")
+pc.heading("Welcome to My Site!")
+pc.text("This site is built entirely in Python using pyclay.")
+pc.button("Get Started")
+
+# Define the About page
+pc.page("About")
+pc.heading("About Us")
+pc.text("We write Python codes that convert to static web pages.")
+""", language="python")
+
+pc.spacer("1.5rem")
+
+pc.heading("Step 3: Run the Development Server", level=3)
+pc.text("Launch the dev server with hot-reload enabled. Your browser will open the page automatically:")
+pc.code_block("pyclay run app.py", language="bash")
+pc.text("Try modifying the text in your `app.py` file and saving it - the browser will refresh instantly to show the changes!")
+
+pc.spacer("1.5rem")
+
+pc.heading("Step 4: Build for Production", level=3)
+pc.text("When you are ready to deploy, export your site to optimized static HTML:")
+pc.code_block("pyclay build app.py --out dist", language="bash")
+pc.text("This creates a standalone `dist/index.html` file alongside your static assets that you can upload to any static host like GitHub Pages, Netlify, or Vercel.")
+
+
+# =========================================================================
 #  PAGE: DOCS
 # =========================================================================
 pc.page("Docs")
@@ -109,7 +214,8 @@ pc.text("Define the page title, initial theme, and optional favicon at the very 
 pc.code_block("""pc.page_config(
     title="My App Title",
     theme="ivory",  # Options: ivory, nebula, arctic, obsidian
-    favicon="assets/favicon.ico"  # Optional: defaults to assets/favicon.ico if exists
+    favicon="assets/favicon.ico",  # Optional: defaults to assets/favicon.ico if exists
+    theme_switcher=True  # Set to False to lock the theme and hide the switcher dropdown
 )""", language="python")
 
 pc.spacer("1.5rem")
@@ -350,15 +456,28 @@ with pc.columns([1, 1], gap="2rem"):
     with pc.column():
         pc.text("Pyclay supports embedding local or remote images and videos. Place your local files in the `assets/` folder and reference them using `assets/...`.")
         pc.spacer("0.5rem")
-        pc.image("assets/test.jpg", alt="Test Image", width=200)
-        pc.spacer("0.5rem")
-        pc.video("assets/test.mp4", controls=True, autoplay=False, width=200, style={"border_radius": "8px"})
+        pc.image("assets/test.jpeg", alt="Test Image", width=200)
     with pc.column():
         pc.code_block("""# Render an image with custom width
-pc.image("assets/test.jpg", alt="Test Image", width=200)
+pc.image("assets/test.jpeg", alt="Test Image", width=200)
 
 # Render a video with custom width
 pc.video("assets/test.mp4", controls=True, autoplay=False, width=200)""", language="python")
+
+pc.spacer("2.5rem")
+
+# Component 12: Theme Switcher
+pc.heading("12. Theme Switcher Configuration", level=3)
+with pc.columns([1, 1], gap="2rem"):
+    with pc.column():
+        pc.text("You can enable or disable the live theme switcher dropdown in the navbar (or floating toggle). Set `theme_switcher=False` to lock the website to your chosen theme and hide all theme-toggle elements.")
+        pc.alert("By default, theme_switcher is set to True.", variant="info")
+    with pc.column():
+        pc.code_block("""pc.page_config(
+    title="My Site",
+    theme="nebula",
+    theme_switcher=False  # Hide toggle dropdown
+)""", language="python")
 
 # =========================================================================
 #  PAGE: PRIVACY
@@ -404,7 +523,7 @@ pc.text("When participating in our community spaces (such as GitHub issues or di
 #  GLOBAL FOOTER
 # =========================================================================
 pc.footer(
-    text="© 2026 pyclay. Open source under Apache-2.0 License.",
+    text=f"© {datetime.datetime.now().year} pyclay. Open source under Apache-2.0 License.",
     variant="columns",
     columns_data=[
         {"heading": "Product", "links": [
@@ -413,11 +532,11 @@ pc.footer(
         ]},
         {"heading": "Resources", "links": [
             {"text": "Documentation", "href": "#docs"},
-            {"text": "Tutorials", "href": "#"},
+            {"text": "Tutorials", "href": "#tutorial"},
         ]},
         {"heading": "Community", "links": [
-            {"text": "GitHub Project", "href": "#"},
-            {"text": "Twitter / X", "href": "#"}
+            {"text": "GitHub Project", "href": "https://github.com/ayush-sharma11/pyclay"},
+            {"text": "Twitter / X", "href": "https://x.com/ahhyoushh"}
         ]}
     ],
     links=[

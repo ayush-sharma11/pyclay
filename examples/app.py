@@ -37,7 +37,11 @@ pc.code_block("""# app.py
 import pyclay as pc
 
 # Define pages programmatically
-pc.page_config(title="My Site", theme="obsidian")
+pc.page_config(
+    title="My Site", 
+    theme="obsidian",
+    theme_switcher=True  # Set to False to lock the theme and hide the switcher dropdown
+)
 pc.navbar("My Site")
 
 pc.page("Home")
