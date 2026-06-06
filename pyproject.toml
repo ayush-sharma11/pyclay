@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pyclay"
+version = "0.3.0"
+description = "Build beautiful, responsive web pages entirely in Python. No HTML, CSS, or JS required."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.8"
+authors = [
+    { name = "Ayush Sharma" },
+]
+keywords = ["web", "html", "static-site", "python", "framework", "ui", "streamlit"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: Markup :: HTML",
+]
+dependencies = [
+    "watchdog>=3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "build",
+    "twine",
+]
+
+[project.scripts]
+pyclay = "pyclay._cli:main"
+
+[project.urls]
+Homepage = "https://github.com/ayush-sharma11/pyclay"
+Repository = "https://github.com/ayush-sharma11/pyclay"
+Documentation = "https://github.com/ayush-sharma11/pyclay#readme"
+Issues = "https://github.com/ayush-sharma11/pyclay/issues"
+Changelog = "https://github.com/ayush-sharma11/pyclay/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "app.py",
+    "assets/test.*",
+    "examples/",
+    "tests/",
+    ".github/",
+    "dist/",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["pyclay"]
